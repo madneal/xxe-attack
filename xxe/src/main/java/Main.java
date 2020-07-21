@@ -1,6 +1,14 @@
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
+
+import javax.sql.rowset.spi.XmlReader;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.*;
+import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -8,13 +16,13 @@ import java.util.zip.ZipInputStream;
 public class Main {
     public static void main(String[] args) {
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-//        ReadFromXml(classLoader.getResource("payload1.xml").getFile());
-        try {
-
-            unzip(classLoader.getResource("payload.xml.zip").getFile());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        ReadFromXml(classLoader.getResource("payload1.xml").getFile());
+//        try {
+//
+//            unzip(classLoader.getResource("payload.xml.zip").getFile());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
     public static void ReadFromXml(String filepath) {
@@ -29,11 +37,25 @@ public class Main {
 //            builder.parse(stream);
             InputStream is = new FileInputStream(new File(
                     "/Users/dongbing/project/xxe-attack/xxe/src/main/resources/payload1.xml"));
-            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-            documentBuilderFactory.setExpandEntityReferences(false);
-            documentBuilderFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-            DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
-            builder.parse(is);
+//            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+//            documentBuilderFactory.setExpandEntityReferences(false);
+//            documentBuilderFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+//            DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
+//            builder.parse(is);
+            XMLReader reader = XMLReaderFactory.createXMLReader();
+            reader.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            reader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            Source xmlSource = new SAXSource(reader, new InputSource(new FileInputStream(new File("output.html"))));;
+            Source xslSource = new SAXSource(reader, new InputSource(new FileInputStream(new File("output.html"))));
+            Result result = new StreamResult(System.out);
+            TransformerFactory transFact =TransformerFactory.newInstance();
+            Transformer trans = transFact.newTransformer(xslSource);
+            trans.transform(xmlSource, result);
+            trans.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+            trans.setOutputProperty(OutputKeys.INDENT, "yues");
+            trans.setOutputProperty(OutputKeys.METHOD, "html");
+            trans.transform(new SAXSource(reader, new InputSource(is)), new StreamResult());
+
         } catch (Exception e) {
             e.printStackTrace();
         }
